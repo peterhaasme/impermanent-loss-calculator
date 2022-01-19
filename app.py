@@ -37,13 +37,13 @@ for token in token_list:
     entry = {'label': token_symbol + ' - ' + token_name, 'value': token_id}
     drop_down_values.append(entry)
 
-dropdown_1 = dcc.Dropdown(
+dropdown_1 = dbc.Select(
         id='token-dropdown-1',
         options=drop_down_values,
         placeholder='Select Token'
     )
 
-dropdown_2 = dcc.Dropdown(
+dropdown_2 = dbc.Select(
         id='token-dropdown-2',
         options=drop_down_values,
         placeholder='Select Token'
@@ -76,69 +76,126 @@ apr_v_apy = html.Div(
 
 # Page Layout #
 app.layout = dbc.Container([
+    # Title Row
     dbc.Row(
         children=dbc.Col(html.H1('Impermanent Loss Calculator')),
         class_name='text-center mt-3'
     ),
+    # Main column row
     dbc.Row(
         children=[
+            # Initial Values column
             dbc.Col(
-                children=dropdown_1,
-                class_name=''
+                children=[
+                    # Header row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=html.H2('Initial Values'),
+                                class_name='text-center'
+                            )
+                        ],
+                        class_name=''
+                    ),
+                    # Token Row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    # TODO: Add tooltip
+                                    dbc.Label('Token 1', html_for="token-dropdown-1", class_name='h4'),
+                                    dropdown_1
+                                ],
+                                class_name=''
+                            ),
+                            dbc.Col(
+                                children=[
+                                    dbc.Label('Token 2', html_for="token-dropdown-2", class_name='h4'),
+                                    dropdown_2
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='text-center'
+                    ),
+                ],
+                class_name='border rounded'
+            ),
+            # Future Values Column
+            dbc.Col(
+                children=html.H2('Future Values'),
+                class_name='text-center p-2 border rounded'
             ),
         ],
         class_name=''
     ),
-    dbc.Row(
-        children=[
-            dbc.Col(
-                children=datepicker,
-                class_name=''
-            ),
-        ],
-        class_name=''
-    ),
-    dbc.Row(
-        children=[
-            dbc.Col(
-                children=html.Div(id='output-container-date-picker-single'),
-                class_name=''
-            ),
-        ],
-        class_name=''
-    ),
-    # dbc.Row(
-    #     children=[
-    #         dbc.Col(
-    #             children=apr_v_apy,
-    #             class_name=''
-    #         ),
-    #     ],
-    #     class_name=''
-    # ),
 ])
+
+# # Page Layout #
+# app.layout = dbc.Container([
+#     dbc.Row(
+#         children=dbc.Col(html.H1('Impermanent Loss Calculator')),
+#         class_name='text-center mt-3'
+#     ),
+#     dbc.Row(
+#         children=[
+#             dbc.Col(
+#                 children=dropdown_1,
+#                 class_name=''
+#             ),
+#         ],
+#         class_name=''
+#     ),
+#     dbc.Row(
+#         children=[
+#             dbc.Col(
+#                 children=datepicker,
+#                 class_name=''
+#             ),
+#         ],
+#         class_name=''
+#     ),
+#     dbc.Row(
+#         children=[
+#             dbc.Col(
+#                 children=html.Div(id='output-container-date-picker-single'),
+#                 class_name=''
+#             ),
+#         ],
+#         class_name=''
+#     ),
+#     # dbc.Row(
+#     #     children=[
+#     #         dbc.Col(
+#     #             children=apr_v_apy,
+#     #             class_name=''
+#     #         ),
+#     #     ],
+#     #     class_name=''
+#     # ),
+# ])
 
 #############
 # Callbacks #
 #############
 
-def get_coin_price(coin_id, date):
-    coin_price = cg.get_coin_history_by_id(
-        id=coin_id,
-        date=date,
-        localization=False
-    )
-    return coin_price['market_data']['current_price']['usd']
-
-@app.callback(
-    Output('output-container-date-picker-single', 'children'),
-    Input('token-dropdown-1', 'value'),
-    Input('date-picker-single', 'date'),
-)
-def update_output(coin_name, date_value):
-    string_prefix = 'You have selected: '
-    if date_value and coin_name is not None:
-        date_object = date.fromisoformat(date_value)
-        date_string = date_object.strftime('%d-%m-%Y')
-        coin_price = get_coin_price(coin_id=coin_name, date=date_string)
-        return f'{coin_name} is ${coin_price:.2f}'
+# def get_coin_price(coin_id, date):
+#     coin_price = cg.get_coin_history_by_id(
+#         id=coin_id,
+#         date=date,
+#         localization=False
+#     )
+#     return coin_price['market_data']['current_price']['usd']
+#
+# @app.callback(
+#     Output('output-container-date-picker-single', 'children'),
+#     Input('token-dropdown-1', 'value'),
+#     Input('date-picker-single', 'date'),
+# )
+# def update_output(coin_name, date_value):
+#     string_prefix = 'You have selected: '
+#     if date_value and coin_name is not None:
+#         date_object = date.fromisoformat(date_value)
+#         date_string = date_object.strftime('%d-%m-%Y')
+#         coin_price = get_coin_price(coin_id=coin_name, date=date_string)
+#         return f'{coin_name} is ${coin_price:.2f}'
