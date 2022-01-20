@@ -38,37 +38,41 @@ for token in token_list:
     drop_down_values.append(entry)
 
 dropdown_1 = dbc.Select(
-        id='token-dropdown-1',
-        options=drop_down_values,
-        placeholder='Select Token'
-    )
+    id='token-dropdown-1',
+    options=drop_down_values,
+    placeholder='Select Token'
+)
 
 dropdown_2 = dbc.Select(
-        id='token-dropdown-2',
-        options=drop_down_values,
-        placeholder='Select Token'
-    )
+    id='token-dropdown-2',
+    options=drop_down_values,
+    placeholder='Select Token'
+)
 
 # Datepicker
-datepicker = dcc.DatePickerSingle(
-        id='date-picker-single',
+datepicker_start = html.Div([
+    dbc.Label('Date Started', html_for="date-picker-start", class_name='h4'),
+    html.Div(className='w-100'),
+    dcc.DatePickerSingle(
+        id='date-picker-start',
         min_date_allowed=date(1995, 8, 5),
         max_date_allowed=date(2022, 1, 30),
         initial_visible_month=date(2022, 1, 5),
         date=date(2022, 1, 8)
     )
+])
 
 # APR vs APY select
 apr_v_apy = html.Div(
     [
-        dbc.Label("Choose one"),
+        # dbc.Label("Choose one", html_for='radio-items-apr-v-apy'),
         dbc.RadioItems(
             options=[
                 {"label": "APR", "value": 1},
                 {"label": "APY", "value": 2},
             ],
             value=1,
-            id="radioitems-apr-v-apy",
+            id="radio-items-apr-v-apy",
             inline=True,
         ),
     ]
@@ -112,6 +116,32 @@ app.layout = dbc.Container([
                                 children=[
                                     dbc.Label('Token 2', html_for="token-dropdown-2", class_name='h4'),
                                     dropdown_2
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='text-center'
+                    ),
+                    # Start Date and APR Row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    datepicker_start
+                                ],
+                                class_name=''
+                            ),
+                            dbc.Col(
+                                children=[
+                                    # dbc.Label('APR or APY', html_for="apr_input", class_name='h4'),
+                                    # apr_v_apy,
+                                    # dbc.Input(id="apr_input", type="number"),
+                                    dbc.InputGroup(
+                                                [
+                                                    dbc.InputGroupText(apr_v_apy),
+                                                    dbc.Input(id="apr_input", type="number"),
+                                                    dbc.InputGroupText("%"),
+                                                ]),
                                 ],
                                 class_name=''
                             ),
