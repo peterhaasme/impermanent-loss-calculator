@@ -40,27 +40,34 @@ for token in token_list:
 dropdown_1 = dbc.Select(
     id='token-dropdown-1',
     options=drop_down_values,
-    placeholder='Select Token'
+    placeholder='Select Token 1',
+    class_name=''
 )
 
 dropdown_2 = dbc.Select(
     id='token-dropdown-2',
     options=drop_down_values,
-    placeholder='Select Token'
+    placeholder='Select Token 2'
 )
 
 # Datepicker
-datepicker_start = html.Div([
-    dbc.Label('Date Started', html_for="date-picker-start", class_name='h4'),
-    html.Div(className='w-100'),
-    dcc.DatePickerSingle(
-        id='date-picker-start',
-        min_date_allowed=date(1995, 8, 5),
-        max_date_allowed=date(2022, 1, 30),
-        initial_visible_month=date(2022, 1, 5),
-        date=date(2022, 1, 8)
-    )
-])
+
+datepicker_start = dbc.InputGroup(
+    children=[
+        dbc.InputGroupText(
+            children=['Select Start Date'],
+            class_name='w-50'
+        ),
+        dcc.DatePickerSingle(
+            id='date-picker-start',
+            min_date_allowed=date(1995, 8, 5),
+            max_date_allowed=date(2022, 1, 30),
+            initial_visible_month=date(2022, 1, 5),
+            date=date(2022, 1, 8),
+        )
+    ],
+    class_name=''
+)
 
 # APR vs APY select
 apr_v_apy = html.Div(
@@ -101,28 +108,7 @@ app.layout = dbc.Container([
                         ],
                         class_name=''
                     ),
-                    # Token Row
-                    dbc.Row(
-                        children=[
-                            dbc.Col(
-                                children=[
-                                    # TODO: Add tooltip
-                                    dbc.Label('Token 1', html_for="token-dropdown-1", class_name='h4'),
-                                    dropdown_1
-                                ],
-                                class_name=''
-                            ),
-                            dbc.Col(
-                                children=[
-                                    dbc.Label('Token 2', html_for="token-dropdown-2", class_name='h4'),
-                                    dropdown_2
-                                ],
-                                class_name=''
-                            ),
-                        ],
-                        class_name='text-center'
-                    ),
-                    # Start Date and APR Row
+                    # Date row
                     dbc.Row(
                         children=[
                             dbc.Col(
@@ -131,17 +117,80 @@ app.layout = dbc.Container([
                                 ],
                                 class_name=''
                             ),
+                        ],
+                        class_name=''
+                    ),
+                    # Token 1 row
+                    dbc.Row(
+                        children=[
                             dbc.Col(
                                 children=[
-                                    # dbc.Label('APR or APY', html_for="apr_input", class_name='h4'),
-                                    # apr_v_apy,
-                                    # dbc.Input(id="apr_input", type="number"),
                                     dbc.InputGroup(
-                                                [
-                                                    dbc.InputGroupText(apr_v_apy),
-                                                    dbc.Input(id="apr_input", type="number"),
-                                                    dbc.InputGroupText("%"),
-                                                ]),
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children=dropdown_1,
+                                                class_name='w-50'
+                                            ),
+                                            dbc.Input(id="token1_input", type="number"),
+                                            dbc.InputGroupText("Qty"),
+                                        ],
+                                        class_name='flex-nowrap'
+                                    ),
+                                ],
+                                width=12,
+                                class_name=''
+                            ),
+                        ],
+                        class_name=''
+                    ),
+                    # Token Row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    # TODO: Add tooltip
+                                    #dbc.Label('Token 1', html_for="token-dropdown-1", class_name='h4'),
+                                    #dropdown_1,
+                                    # dbc.InputGroup(
+                                    #     children=[
+                                    #         dbc.InputGroupText(dropdown_1),
+                                    #         dbc.Input(id="token1_input", type="number"),
+                                    #         dbc.InputGroupText("Qty"),
+                                    #     ],
+                                    #     class_name=''
+                                    # ),
+                                ],
+                                class_name=''
+                            ),
+                            dbc.Col(
+                                children=[
+                                    dbc.Label('Token 2', html_for="token-dropdown-2", class_name='h4'),
+                                    dropdown_2
+                                ],
+                                class_name='',
+                            ),
+                        ],
+                        class_name='text-center'
+                    ),
+                    # Start Date and APR Row
+                    dbc.Row(
+                        children=[
+                            # dbc.Col(
+                            #     children=[
+                            #         datepicker_start
+                            #     ],
+                            #     class_name=''
+                            # ),
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(apr_v_apy),
+                                            dbc.Input(id="apr_input", type="number"),
+                                            dbc.InputGroupText("%"),
+                                        ],
+                                        class_name=''
+                                    ),
                                 ],
                                 class_name=''
                             ),
