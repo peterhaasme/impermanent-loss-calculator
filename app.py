@@ -137,50 +137,41 @@ app.layout = dbc.Container([
                                         class_name='flex-nowrap'
                                     ),
                                 ],
-                                width=12,
                                 class_name=''
                             ),
                         ],
                         class_name=''
                     ),
-                    # Token Row
+                    # Token 2 row
                     dbc.Row(
                         children=[
                             dbc.Col(
                                 children=[
-                                    # TODO: Add tooltip
-                                    #dbc.Label('Token 1', html_for="token-dropdown-1", class_name='h4'),
-                                    #dropdown_1,
-                                    # dbc.InputGroup(
-                                    #     children=[
-                                    #         dbc.InputGroupText(dropdown_1),
-                                    #         dbc.Input(id="token1_input", type="number"),
-                                    #         dbc.InputGroupText("Qty"),
-                                    #     ],
-                                    #     class_name=''
-                                    # ),
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children=dropdown_2,
+                                                class_name='w-50'
+                                            ),
+                                            dbc.Input(id="token2_input", type="number"),
+                                            dbc.InputGroupText("Qty"),
+                                        ],
+                                        class_name='flex-nowrap'
+                                    ),
                                 ],
                                 class_name=''
                             ),
-                            dbc.Col(
-                                children=[
-                                    dbc.Label('Token 2', html_for="token-dropdown-2", class_name='h4'),
-                                    dropdown_2
-                                ],
-                                class_name='',
-                            ),
                         ],
-                        class_name='text-center'
+                        class_name=''
+                    ),
+                    # Token price row
+                    dbc.Row(
+                        children=[],
+                        class_name=''
                     ),
                     # Start Date and APR Row
                     dbc.Row(
                         children=[
-                            # dbc.Col(
-                            #     children=[
-                            #         datepicker_start
-                            #     ],
-                            #     class_name=''
-                            # ),
                             dbc.Col(
                                 children=[
                                     dbc.InputGroup(
