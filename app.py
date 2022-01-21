@@ -131,10 +131,10 @@ app.layout = dbc.Container([
                                                 children=dropdown_1,
                                                 class_name='w-50'
                                             ),
-                                            dbc.Input(id="token1_input", type="number"),
+                                            dbc.Input(id="token-1-input", type="number"),
                                             dbc.InputGroupText("Qty"),
                                         ],
-                                        class_name='flex-nowrap'
+                                        #class_name='flex-nowrap'
                                     ),
                                 ],
                                 class_name=''
@@ -153,10 +153,10 @@ app.layout = dbc.Container([
                                                 children=dropdown_2,
                                                 class_name='w-50'
                                             ),
-                                            dbc.Input(id="token2_input", type="number"),
+                                            dbc.Input(id="token-2-input", disabled=True),
                                             dbc.InputGroupText("Qty"),
                                         ],
-                                        class_name='flex-nowrap'
+                                        #class_name='flex-nowrap'
                                     ),
                                 ],
                                 class_name=''
@@ -166,7 +166,27 @@ app.layout = dbc.Container([
                     ),
                     # Token price row
                     dbc.Row(
-                        children=[],
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children='Token 1 Price',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="token-1-price", disabled=True),
+                                            dbc.InputGroupText(
+                                                children='Token 2 Price',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="token-2-price", disabled=True),
+                                        ],
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
                         class_name=''
                     ),
                     # Start Date and APR Row
@@ -186,14 +206,33 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name='text-center'
+                        class_name=''
+                    ),
+                    # Total Value Row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText('Total Value'),
+                                            dbc.InputGroupText('$'),
+                                            dbc.Input(id="total-value", disabled=True),
+                                        ],
+                                        class_name=''
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name=''
                     ),
                 ],
                 class_name='border rounded'
             ),
             # Future Values Column
             dbc.Col(
-                children=html.H2('Future Values'),
+                children=html.H2('Future Values', id='test_target'),
                 class_name='text-center p-2 border rounded'
             ),
         ],
@@ -201,71 +240,91 @@ app.layout = dbc.Container([
     ),
 ])
 
-# # Page Layout #
-# app.layout = dbc.Container([
-#     dbc.Row(
-#         children=dbc.Col(html.H1('Impermanent Loss Calculator')),
-#         class_name='text-center mt-3'
-#     ),
-#     dbc.Row(
-#         children=[
-#             dbc.Col(
-#                 children=dropdown_1,
-#                 class_name=''
-#             ),
-#         ],
-#         class_name=''
-#     ),
-#     dbc.Row(
-#         children=[
-#             dbc.Col(
-#                 children=datepicker,
-#                 class_name=''
-#             ),
-#         ],
-#         class_name=''
-#     ),
-#     dbc.Row(
-#         children=[
-#             dbc.Col(
-#                 children=html.Div(id='output-container-date-picker-single'),
-#                 class_name=''
-#             ),
-#         ],
-#         class_name=''
-#     ),
-#     # dbc.Row(
-#     #     children=[
-#     #         dbc.Col(
-#     #             children=apr_v_apy,
-#     #             class_name=''
-#     #         ),
-#     #     ],
-#     #     class_name=''
-#     # ),
-# ])
-
 #############
 # Callbacks #
 #############
 
-# def get_coin_price(coin_id, date):
-#     coin_price = cg.get_coin_history_by_id(
-#         id=coin_id,
-#         date=date,
-#         localization=False
-#     )
-#     return coin_price['market_data']['current_price']['usd']
-#
+def get_coin_price(coin_id, date):
+    coin_price = cg.get_coin_history_by_id(
+        id=coin_id,
+        date=date,
+        localization=False
+    )
+    return coin_price['market_data']['current_price']['usd']
+
+
+@app.callback(
+    Output('token-1-price', 'value'),
+    Output('token-2-price', 'value'),
+    Output('token-2-input', 'value'),
+    Output('total-value', 'value'),
+    Input('date-picker-start', 'date'),
+    Input('token-dropdown-1', 'value'),
+    Input('token-dropdown-2', 'value'),
+    Input('token-1-input', 'value'),
+    #prevent_initial_call=True
+)
+# TODO: what if date is before token existed?
+def update_token_1_price(date_value, token_1_name, token_2_name, token_1_qty):
+    date_object = date.fromisoformat(date_value)
+    date_string = date_object.strftime('%d-%m-%Y')
+    if token_1_name is not None and token_2_name is None and token_1_qty is None:
+        token_1_price = round(get_coin_price(coin_id=token_1_name, date=date_string), 2)
+        return f'${token_1_price:,.2f}', '$0.00', '0', '$0.00'
+    elif token_1_name is not None and token_2_name is not None and token_1_qty is None:
+        token_1_price = round(get_coin_price(coin_id=token_1_name, date=date_string), 2)
+        token_2_price = round(get_coin_price(coin_id=token_2_name, date=date_string), 2)
+        return f'${token_1_price:,.2f}', f'${token_2_price:,.2f}', '0', '$0.00'
+    elif token_1_name is not None and token_2_name is not None and token_1_qty is not None:
+        token_1_price = round(get_coin_price(coin_id=token_1_name, date=date_string), 2)
+        token_2_price = round(get_coin_price(coin_id=token_2_name, date=date_string), 2)
+        token_2_qty = (token_1_price * token_1_qty) / token_2_price
+        total_value = (token_1_price * token_1_qty) + (token_2_price * token_2_qty)
+        return f'${token_1_price:,.2f}', f'${token_2_price:,.2f}', f'{token_2_qty:,.2f}', f'${total_value:,.2f}'
+    else:
+        return '$0.00', '$0.00', '0', '$0.00'
+
 # @app.callback(
-#     Output('output-container-date-picker-single', 'children'),
+#     Output('token-1-price', 'value'),
+#     Output('token-2-price', 'value'),
+#     Output('token-2-input', 'value'),
+#     Output('total-value', 'value'),
+#     Input('date-picker-start', 'date'),
 #     Input('token-dropdown-1', 'value'),
-#     Input('date-picker-single', 'date'),
+#     Input('token-dropdown-2', 'value'),
+#     Input('token-1-input', 'value'),
+#     #prevent_initial_call=True
 # )
-# def update_output(coin_name, date_value):
-#     string_prefix = 'You have selected: '
-#     if date_value and coin_name is not None:
+# def update_token_1_price(date_value, token_1_name, token_2_name, token_1_qty):
+#     if (date_value is not None
+#         and token_1_name is not None
+#         and token_2_name is None
+#         and token_1_qty is None
+#     ):
 #         date_object = date.fromisoformat(date_value)
 #         date_string = date_object.strftime('%d-%m-%Y')
-#         coin_price = get_coin_price(coin_id=coin_name, date=date_string)
-#         return f'{coin_name} is ${coin_price:.2f}'
+#         token_1_price = round(get_coin_price(coin_id=token_1_name, date=date_string), 2)
+#         return f'${token_1_price:,.2f}', '$0.00', '0', '$0.00'
+#     elif (date_value is not None) and (token_1_name is not None) and (token_2_name is not None) and (token_1_qty is not None):
+#         date_object = date.fromisoformat(date_value)
+#         date_string = date_object.strftime('%d-%m-%Y')
+#         token_1_price = round(get_coin_price(coin_id=token_1_name, date=date_string), 2)
+#         token_2_price = round(get_coin_price(coin_id=token_2_name, date=date_string), 2)
+#         token_2_qty = (token_1_price * token_1_qty) / token_2_price
+#         total_value = (token_1_price * token_1_qty) + (token_2_price * token_2_qty)
+#         return f'${token_1_price:,.2f}', f'${token_2_price:,.2f}', f'{token_2_qty:,.2f}', f'${total_value:,.2f}'
+#     else:
+#         return '$0.00', '$0.00', '0', '$0.00'
+
+# (token 1 price * token 2 qty) / token 2 price
+# @app.callback(
+#     Output('token-2-input', 'value'),
+#     Input('token-1-input', 'value'),
+#     Input('token-1-price', 'value'),
+#     Input('token-2-price', 'value'),
+# )
+# def update_token_2_qty(tok_1_qty, tok_1_price, tok_2_price):
+#     if tok_1_qty and tok_1_price and tok_2_price is not None:
+#         tok_2_qty = (tok_1_qty * tok_1_price) / tok_2_price
+#         return tok_2_qty
+# # inputs come back as strings
