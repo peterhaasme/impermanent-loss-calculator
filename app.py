@@ -13,9 +13,9 @@ from pycoingecko import CoinGeckoAPI
 
 #############
 # Instances #
-#############
+############
 # Dash Instance and server
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SIMPLEX])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SPACELAB])
 server = app.server
 
 # Instantiate Coingecko API object
@@ -56,14 +56,28 @@ datepicker_start = dbc.InputGroup(
     children=[
         dbc.InputGroupText(
             children=['Select Start Date'],
-            class_name='w-50'
+            class_name='w-50',
         ),
         dcc.DatePickerSingle(
             id='date-picker-start',
             min_date_allowed=date(1995, 8, 5),
-            max_date_allowed=date(2022, 1, 30),
-            initial_visible_month=date(2022, 1, 5),
-            date=date(2022, 1, 8),
+            max_date_allowed=date.today(),
+            date=date.today(),
+        )
+    ],
+    class_name=''
+)
+
+datepicker_future = dbc.InputGroup(
+    children=[
+        dbc.InputGroupText(
+            children=['Select Future Date'],
+            class_name='w-50',
+        ),
+        dcc.DatePickerSingle(
+            id='date-picker-future',
+            min_date_allowed=date.today(),
+            date=date.today(),
         )
     ],
     class_name=''
@@ -89,8 +103,8 @@ apr_v_apy = html.Div(
 app.layout = dbc.Container([
     # Title Row
     dbc.Row(
-        children=dbc.Col(html.H1('Impermanent Loss Calculator')),
-        class_name='text-center mt-3'
+        children=dbc.Col(html.H1('Impermanent Loss Calculator', className='text-white'), class_name='bg-primary border rounded'),
+        class_name='text-center p-1'
     ),
     # Main column row
     dbc.Row(
@@ -102,8 +116,8 @@ app.layout = dbc.Container([
                     dbc.Row(
                         children=[
                             dbc.Col(
-                                children=html.H2('Initial Values'),
-                                class_name='text-center'
+                                children='Initial Values',
+                                class_name='h2 text-center'
                             )
                         ],
                         class_name=''
@@ -118,7 +132,7 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name=''
+                        class_name='m-1'
                     ),
                     # Token 1 row
                     dbc.Row(
@@ -140,7 +154,7 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name=''
+                        class_name='m-1'
                     ),
                     # Token 2 row
                     dbc.Row(
@@ -162,7 +176,7 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name=''
+                        class_name='m-1'
                     ),
                     # Token price row
                     dbc.Row(
@@ -187,7 +201,7 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name=''
+                        class_name='m-1'
                     ),
                     # Start Date and APR Row
                     dbc.Row(
@@ -206,7 +220,7 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name=''
+                        class_name='m-1'
                     ),
                     # Total Value Row
                     dbc.Row(
@@ -225,15 +239,150 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name=''
+                        class_name='mx-1 mb-2'
                     ),
                 ],
-                class_name='border rounded'
+                class_name='m-1 p-1 border rounded bg-secondary',
+                md=6
             ),
             # Future Values Column
             dbc.Col(
-                children=html.H2('Future Values', id='test_target'),
-                class_name='text-center p-2 border rounded'
+                children=[
+                    # Header row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=html.H2('Future Values'),
+                                class_name='text-center'
+                            )
+                        ],
+                        class_name=''
+                    ),
+                    # Date row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    datepicker_future
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='m-1'
+                    ),
+                    # Token 1 row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children='Token 1',
+                                                class_name='w-50'
+                                            ),
+                                            dbc.Input(id="token-1-future-qty", type="number"),
+                                            dbc.InputGroupText("Qty"),
+                                        ],
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='m-1'
+                    ),
+                    # Token 2 row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children='Token 2',
+                                                class_name='w-50'
+                                            ),
+                                            dbc.Input(id="token-2-future-qty", type="number"),
+                                            dbc.InputGroupText("Qty"),
+                                        ],
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='m-1'
+                    ),
+                    # Future token price row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children='Token 1 Price',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="token-1-future-price"),
+                                            dbc.InputGroupText(
+                                                children='Token 2 Price',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="token-2-future-price"),
+                                        ],
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='m-1'
+                    ),
+                    # Total Value Before Interest Row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText('Total Value Before Interest'),
+                                            dbc.InputGroupText('$'),
+                                            dbc.Input(id="total-value-before-interest", disabled=True),
+                                        ],
+                                        class_name=''
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='mx-1 mb-2'
+                    ),
+                    # Value if held row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children='Token 1 If Held',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="token-1-held"),
+                                            dbc.InputGroupText(
+                                                children='Token 2 If Held',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="token-2-held"),
+                                        ],
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='m-1'
+                    ),
+                ],
+                class_name='m-1 p-1 border rounded bg-secondary',
             ),
         ],
         class_name=''
