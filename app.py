@@ -354,7 +354,7 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name='mx-1 mb-2'
+                        class_name='m-1'
                     ),
                     # Value if held row
                     dbc.Row(
@@ -367,12 +367,102 @@ app.layout = dbc.Container([
                                                 children='Token 1 If Held',
                                                 class_name=''
                                             ),
-                                            dbc.Input(id="token-1-held"),
+                                            dbc.Input(id="token-1-held", disabled=True),
                                             dbc.InputGroupText(
                                                 children='Token 2 If Held',
                                                 class_name=''
                                             ),
-                                            dbc.Input(id="token-2-held"),
+                                            dbc.Input(id="token-2-held", disabled=True),
+                                            dbc.InputGroupText(
+                                                children='Total If Held',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="total-held", disabled=True),
+                                        ],
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='m-1'
+                    ),
+                    # Impermanent Loss row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children='Impermanent Loss',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="il-percent", disabled=True),
+                                            dbc.InputGroupText(
+                                                children='%',
+                                                class_name=''
+                                            ),
+                                            dbc.InputGroupText(
+                                                children='$',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="il-dollar", disabled=True),
+
+                                        ],
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='m-1'
+                    ),
+                    # Interest Earned row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children='Interest Earned',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="int-percent", disabled=True),
+                                            dbc.InputGroupText(
+                                                children='%',
+                                                class_name=''
+                                            ),
+                                            dbc.InputGroupText(
+                                                children='$',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="int-dollar", disabled=True),
+
+                                        ],
+                                    ),
+                                ],
+                                class_name=''
+                            ),
+                        ],
+                        class_name='m-1'
+                    ),
+                    # Total Value w/ interest + Difference row
+                    dbc.Row(
+                        children=[
+                            dbc.Col(
+                                children=[
+                                    dbc.InputGroup(
+                                        children=[
+                                            dbc.InputGroupText(
+                                                children='Total Value + Interest',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="value-interest", disabled=True),
+                                            dbc.InputGroupText(
+                                                children='Difference Vs Holding',
+                                                class_name=''
+                                            ),
+                                            dbc.Input(id="diff-vs-hold", disabled=True),
                                         ],
                                     ),
                                 ],
