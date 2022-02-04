@@ -230,7 +230,7 @@ app.layout = dbc.Container([
                                     dbc.InputGroup(
                                         children=[
                                             dbc.InputGroupText('Total Value'),
-                                            dbc.InputGroupText('$'),
+                                            #dbc.InputGroupText('$'),
                                             dbc.Input(id="total-value", disabled=True),
                                         ],
                                         class_name=''
@@ -343,7 +343,7 @@ app.layout = dbc.Container([
                                     dbc.InputGroup(
                                         children=[
                                             dbc.InputGroupText('Total Value Before Interest'),
-                                            dbc.InputGroupText('$'),
+                                            #dbc.InputGroupText('$'),
                                             dbc.Input(id="total-value-before-interest", disabled=True),
                                         ],
                                         class_name=''
@@ -524,6 +524,10 @@ def update_token_1_price(date_value, token_1_name, token_2_name, token_1_qty):
 @app.callback(
     Output('token-1-future-qty', 'value'),
     Output('token-2-future-qty', 'value'),
+    Output('total-value-before-interest', 'value'),
+    Output('token-1-held', 'value'),
+    Output('token-2-held', 'value'),
+    Output('total-held', 'value'),
     Input('token-1-qty', 'value'),
     Input('token-2-qty', 'value'),
     Input('token-1-future-price', 'value'),
@@ -539,6 +543,11 @@ def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_futu
         future_price_ratio = float(token_1_future_price) / float(token_2_future_price)
         token_1_future_qty = (product_constant / future_price_ratio) ** 0.5
         token_2_future_qty = (product_constant * future_price_ratio) ** 0.5
-        return token_1_future_qty, token_2_future_qty
+        total_val_before_int = (token_1_future_price * token_1_future_qty) + (token_2_future_price * token_2_future_qty)
+        token_1_held = float(token_1_qty) * token_1_future_price
+        token_2_held = float(token_2_qty) * token_2_future_price
+        total_if_held = token_1_held + token_2_held
+        return (token_1_future_qty, token_2_future_qty, f'${total_val_before_int:.2f}', f'${token_1_held:.2f}',
+                f'${token_2_held:.2f}', f'${total_if_held:.2f}')
     else:
-        return 0, 0
+        return 0, 0, 0, 0, 0, 0
