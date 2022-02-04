@@ -528,7 +528,6 @@ def update_token_1_price(date_value, token_1_name, token_2_name, token_1_qty):
     Input('token-2-qty', 'value'),
     Input('token-1-future-price', 'value'),
     Input('token-2-future-price', 'value'),
-    #prevent_initial_call=True
 )
 def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_future_price):
     if (token_1_qty is not None
@@ -537,7 +536,7 @@ def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_futu
         and token_2_future_price is not None
     ):
         product_constant = token_1_qty * float(token_2_qty)
-        future_price_ratio = float(token_1_future_price) * float(token_2_future_price)
+        future_price_ratio = float(token_1_future_price) / float(token_2_future_price)
         token_1_future_qty = (product_constant / future_price_ratio) ** 0.5
         token_2_future_qty = (product_constant * future_price_ratio) ** 0.5
         return token_1_future_qty, token_2_future_qty
