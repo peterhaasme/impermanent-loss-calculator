@@ -395,17 +395,16 @@ app.layout = dbc.Container([
                                                 children='Impermanent Loss',
                                                 class_name=''
                                             ),
-                                            dbc.Input(id="il-percent", disabled=True),
-                                            dbc.InputGroupText(
-                                                children='%',
-                                                class_name=''
-                                            ),
-                                            dbc.InputGroupText(
-                                                children='$',
-                                                class_name=''
-                                            ),
-                                            dbc.Input(id="il-dollar", disabled=True),
-
+                                            dbc.Input(id="il", disabled=True),
+                                            # dbc.InputGroupText(
+                                            #     children='%',
+                                            #     class_name=''
+                                            # ),
+                                            # dbc.InputGroupText(
+                                            #     children='$',
+                                            #     class_name=''
+                                            # ),
+                                            # dbc.Input(id="il-dollar", disabled=True),
                                         ],
                                     ),
                                 ],
@@ -528,6 +527,8 @@ def update_token_1_price(date_value, token_1_name, token_2_name, token_1_qty):
     Output('token-1-held', 'value'),
     Output('token-2-held', 'value'),
     Output('total-held', 'value'),
+    Output('il', 'value'),
+    #Output('il-percent', 'value'),
     Input('token-1-qty', 'value'),
     Input('token-2-qty', 'value'),
     Input('token-1-future-price', 'value'),
@@ -547,7 +548,9 @@ def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_futu
         token_1_held = float(token_1_qty) * token_1_future_price
         token_2_held = float(token_2_qty) * token_2_future_price
         total_if_held = token_1_held + token_2_held
+        il_dollar = total_val_before_int - total_if_held
+        il_percent = (il_dollar / total_if_held) * 100
         return (token_1_future_qty, token_2_future_qty, f'${total_val_before_int:.2f}', f'${token_1_held:.2f}',
-                f'${token_2_held:.2f}', f'${total_if_held:.2f}')
+                f'${token_2_held:.2f}', f'${total_if_held:.2f}', f'${il_dollar:.2f} ({il_percent:.2f}%)')
     else:
-        return 0, 0, 0, 0, 0, 0
+        return 0, 0, 0, 0, 0, 0, 0
