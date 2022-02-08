@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import dash_html_components as html
-from datetime import date
+from datetime import date, datetime
 import pandas as pd
 import plotly.express as px
 from pycoingecko import CoinGeckoAPI
@@ -528,13 +528,15 @@ def update_token_1_price(date_value, token_1_name, token_2_name, token_1_qty):
     Output('token-2-held', 'value'),
     Output('total-held', 'value'),
     Output('il', 'value'),
-    #Output('il-percent', 'value'),
+    Output('value-interest', 'value'),
     Input('token-1-qty', 'value'),
     Input('token-2-qty', 'value'),
     Input('token-1-future-price', 'value'),
     Input('token-2-future-price', 'value'),
+    Input('date-picker-start', 'date'),
+    Input('date-picker-future', 'date'),
 )
-def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_future_price):
+def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_future_price, start_date, future_date):
     if (token_1_qty is not None
         and token_2_qty is not None
         and token_1_future_price is not None
@@ -550,7 +552,17 @@ def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_futu
         total_if_held = token_1_held + token_2_held
         il_dollar = total_val_before_int - total_if_held
         il_percent = (il_dollar / total_if_held) * 100
+        day_delta = (datetime.strptime(future_date, '%Y-%m-%d') - datetime.strptime(start_date, '%Y-%m-%d')).days
         return (token_1_future_qty, token_2_future_qty, f'${total_val_before_int:.2f}', f'${token_1_held:.2f}',
-                f'${token_2_held:.2f}', f'${total_if_held:.2f}', f'${il_dollar:.2f} ({il_percent:.2f}%)')
+                f'${token_2_held:.2f}', f'${total_if_held:.2f}', f'${il_dollar:.2f} ({il_percent:.2f}%)', day_delta)
     else:
-        return 0, 0, 0, 0, 0, 0, 0
+        return 0, 0, 0, 0, 0, 0, 0, 0
+
+
+def get_interest(day_delta, rate, is_apr=False, is_apy=False):
+    if is_apr:
+        interest = (1 + (rate / 365)) ** day_delta - 1
+    if is_apy:
+        apr = ((rate + 1) ** (1 / 365) - 1) * (365 / 1)
+        interest = (1 + (apr / 365)) ** day_delta - 1
+    return interest
