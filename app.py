@@ -89,8 +89,8 @@ apr_v_apy = html.Div(
         # dbc.Label("Choose one", html_for='radio-items-apr-v-apy'),
         dbc.RadioItems(
             options=[
-                {"label": "APR", "value": 1},
-                {"label": "APY", "value": 2},
+                {"label": "APR", "value": 'apr'},
+                {"label": "APY", "value": 'apy'},
             ],
             value=1,
             id="radio-items-apr-v-apy",
@@ -424,16 +424,16 @@ app.layout = dbc.Container([
                                                 children='Interest Earned',
                                                 class_name=''
                                             ),
-                                            dbc.Input(id="int-percent", disabled=True),
-                                            dbc.InputGroupText(
-                                                children='%',
-                                                class_name=''
-                                            ),
-                                            dbc.InputGroupText(
-                                                children='$',
-                                                class_name=''
-                                            ),
-                                            dbc.Input(id="int-dollar", disabled=True),
+                                            # dbc.Input(id="int-percent", disabled=True),
+                                            # dbc.InputGroupText(
+                                            #     children='%',
+                                            #     class_name=''
+                                            # ),
+                                            # dbc.InputGroupText(
+                                            #     children='$',
+                                            #     class_name=''
+                                            # ),
+                                            dbc.Input(id="interest", disabled=True),
 
                                         ],
                                     ),
@@ -520,6 +520,17 @@ def update_token_1_price(date_value, token_1_name, token_2_name, token_1_qty):
     else:
         return '$0.00', '$0.00', '0', '$0.00'
 
+
+def calc_accrued(val_before_int, day_delta, rate, apr_or_apy):
+    if apr_or_apy == 'apr':
+        accrued = val_before_int * (1 + ((rate / 360) * day_delta))
+        return accrued
+    if apr_or_apy == 'apy':
+        apr = ((rate + 1) ** (1 / 360) - 1) * (365 / 1)
+        accrued = val_before_int * (1 + ((apr / 360) * day_delta))
+        return accrued
+
+
 @app.callback(
     Output('token-1-future-qty', 'value'),
     Output('token-2-future-qty', 'value'),
@@ -529,18 +540,24 @@ def update_token_1_price(date_value, token_1_name, token_2_name, token_1_qty):
     Output('total-held', 'value'),
     Output('il', 'value'),
     Output('value-interest', 'value'),
+    Output('interest', 'value'),
     Input('token-1-qty', 'value'),
     Input('token-2-qty', 'value'),
     Input('token-1-future-price', 'value'),
     Input('token-2-future-price', 'value'),
     Input('date-picker-start', 'date'),
     Input('date-picker-future', 'date'),
+    Input('radio-items-apr-v-apy', 'value'),
+    Input('apr_input', 'value'),
+    Input('total-value', 'value'),
 )
-def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_future_price, start_date, future_date):
+def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_future_price, start_date, future_date,
+                    apr_or_apy, rate, total_value):
     if (token_1_qty is not None
         and token_2_qty is not None
         and token_1_future_price is not None
         and token_2_future_price is not None
+        and rate is not None
     ):
         product_constant = token_1_qty * float(token_2_qty)
         future_price_ratio = float(token_1_future_price) / float(token_2_future_price)
@@ -553,16 +570,14 @@ def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_futu
         il_dollar = total_val_before_int - total_if_held
         il_percent = (il_dollar / total_if_held) * 100
         day_delta = (datetime.strptime(future_date, '%Y-%m-%d') - datetime.strptime(start_date, '%Y-%m-%d')).days
+        interest = rate / 100
+        accrued = calc_accrued(total_val_before_int, day_delta, interest, apr_or_apy)
+        int_dollar = accrued - total_val_before_int
+        total_value = float(total_value.replace('$', '').replace(',', ''))
+        int_percent = (int_dollar / total_value) * 100
         return (token_1_future_qty, token_2_future_qty, f'${total_val_before_int:.2f}', f'${token_1_held:.2f}',
-                f'${token_2_held:.2f}', f'${total_if_held:.2f}', f'${il_dollar:.2f} ({il_percent:.2f}%)', day_delta)
+                f'${token_2_held:.2f}', f'${total_if_held:.2f}', f'${il_dollar:.2f} ({il_percent:.2f}%)',
+                f'${accrued:.2f}', f'${int_dollar:.2f} ({int_percent:.2f}%)')
     else:
-        return 0, 0, 0, 0, 0, 0, 0, 0
+        return 0, 0, 0, 0, 0, 0, 0, 0, 0
 
-
-def get_interest(day_delta, rate, is_apr=False, is_apy=False):
-    if is_apr:
-        interest = (1 + (rate / 365)) ** day_delta - 1
-    if is_apy:
-        apr = ((rate + 1) ** (1 / 365) - 1) * (365 / 1)
-        interest = (1 + (apr / 365)) ** day_delta - 1
-    return interest
