@@ -466,7 +466,7 @@ app.layout = dbc.Container([
                                 class_name=''
                             ),
                         ],
-                        class_name='m-1'
+                        class_name='m-1 mb-3'
                     ),
                 ],
                 class_name='m-1 p-1 border rounded bg-secondary',
@@ -541,6 +541,7 @@ def calc_accrued(val_before_int, day_delta, rate, apr_or_apy):
     Output('il', 'value'),
     Output('value-interest', 'value'),
     Output('interest', 'value'),
+    Output('diff-vs-hold', 'value'),
     Input('token-1-qty', 'value'),
     Input('token-2-qty', 'value'),
     Input('token-1-future-price', 'value'),
@@ -575,9 +576,10 @@ def calc_future_qty(token_1_qty, token_2_qty, token_1_future_price, token_2_futu
         int_dollar = accrued - total_val_before_int
         total_value = float(total_value.replace('$', '').replace(',', ''))
         int_percent = (int_dollar / total_value) * 100
+        diff_vs_hold = accrued - total_if_held
         return (token_1_future_qty, token_2_future_qty, f'${total_val_before_int:.2f}', f'${token_1_held:.2f}',
                 f'${token_2_held:.2f}', f'${total_if_held:.2f}', f'${il_dollar:.2f} ({il_percent:.2f}%)',
-                f'${accrued:.2f}', f'${int_dollar:.2f} ({int_percent:.2f}%)')
+                f'${accrued:.2f}', f'${int_dollar:.2f} ({int_percent:.2f}%)', f'${diff_vs_hold:.2f}')
     else:
-        return 0, 0, 0, 0, 0, 0, 0, 0, 0
+        return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
